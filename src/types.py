@@ -135,6 +135,8 @@ class ApiConnection:
         self.request = request
 
     def reply(self, content: str, content_type: str = "text/html", status_code: str = "200 OK", headers: dict = {}):
+        if self.conn.fileno() == -1:
+            raise ConnectionAbortedError
         if self.request:
             response = HttpResponse(status_code, self.request.http_version, headers)
         else:
@@ -145,4 +147,10 @@ class ApiConnection:
         response["Date"] = datetime.fromtimestamp(time.time()).strftime("%a, %d %b %Y %I:%M:%S %p")
         response.content = content
         self.conn.sendall(response.to_string().encode())
+        self.conn.close()
+    
+    def is_closed(self):
+        return self.conn.fileno() == -1
+
+    def close(self):
         self.conn.close()
