@@ -22,6 +22,7 @@ from .parser import Parser
 from .server import Server
 from typing import List
 import threading
+import traceback
 import time
 
 class Api:
@@ -54,6 +55,7 @@ class Api:
                                 conn.conn.close()
                             break
                         except Exception as e:
+                            traceback.print_exc()
                             reply = True
                             conn.reply("<h1 align=\"center\">Internal Server Error</h1>", status_code="500 Internal Server Error")
                             break
